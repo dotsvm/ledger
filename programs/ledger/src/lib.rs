@@ -1,20 +1,21 @@
 use anchor_lang::prelude::*;
+declare_id!("8MafjwK4me4QcCkpQSzLUd6vWU6sZaGZTRNZS5QU1HTA");
 
 pub mod instructions;
 pub mod state;
 
-use instructions::initialize::{initialize as initialize_ix, Initialize};
-use instructions::transfer::{transfer as transfer_ix, Transfer};
+use instructions::initialize::*;
+use instructions::transfer::*;
 
 #[program]
 pub mod ledger {
     use super::*;
-    
+
     pub fn initialize(ctx: Context<Initialize>) -> Result<()> {
-        initialize_ix(ctx)
+        instructions::initialize::initialize(ctx)
     }
-    
+
     pub fn transfer(ctx: Context<Transfer>, amount: u64) -> Result<()> {
-        transfer_ix(ctx, amount)
+        instructions::transfer::transfer(ctx, amount)
     }
 }
