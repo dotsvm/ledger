@@ -1,16 +1,13 @@
-use anchor_lang::prelude::*;
+pub mod instructions;
+pub mod state;
 
-declare_id!("8MafjwK4me4QcCkpQSzLUd6vWU6sZaGZTRNZS5QU1HTA");
+use instructions::initialize::*;
 
 #[program]
 pub mod ledger {
     use super::*;
-
+    
     pub fn initialize(ctx: Context<Initialize>) -> Result<()> {
-        msg!("Greetings from: {:?}", ctx.program_id);
-        Ok(())
+        initialize(ctx)
     }
 }
-
-#[derive(Accounts)]
-pub struct Initialize {}
