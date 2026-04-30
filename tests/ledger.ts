@@ -50,13 +50,13 @@ describe("ledger", () => {
         .rpc();
       assert.fail("transfer should have failed with insufficient funds");
     } catch (err) {
-      assert.match(String(err), /InsufficientFunds|0x1/);
+      assert.include(err.toString(), "InsufficientBalance");
     }
   });
 
   it("deposit and transfer", async () => {
     await program.methods
-      .deposit(new anchor.BN(100))
+      .deposit(new anchor.BN(400))
       .accounts({
         user: userA.publicKey,
         signer: provider.wallet.publicKey
@@ -64,7 +64,7 @@ describe("ledger", () => {
       .rpc();
 
     let accountA = await program.account.userAccount.fetch(userA.publicKey);
-    assert.equal(accountA.balance.toNumber(), 100);
+    assert.equal(accountA.balance.toNumber(), 400);
 
     await program.methods
       .transfer(new anchor.BN(50))
@@ -78,7 +78,7 @@ describe("ledger", () => {
     accountA = await program.account.userAccount.fetch(userA.publicKey);
     const accountB = await program.account.userAccount.fetch(userB.publicKey);
 
-    assert.equal(accountA.balance.toNumber(), 50);
+    assert.equal(accountA.balance.toNumber(), 350);
     assert.equal(accountB.balance.toNumber(), 50);
   });
 });
