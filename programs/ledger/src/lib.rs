@@ -6,6 +6,7 @@ pub mod state;
 
 use instructions::initialize::*;
 use instructions::transfer::*;
+use instructions::deposit::*;
 
 #[program]
 pub mod ledger {
@@ -17,5 +18,9 @@ pub mod ledger {
 
     pub fn transfer(ctx: Context<Transfer>, amount: u64) -> Result<()> {
         instructions::transfer::transfer(ctx, amount)
+    }
+
+    pub fn deposit(ctx: Context<Deposit>, amount: u64) -> Result<()> {
+        instructions::deposit::deposit(ctx, amount)
     }
 }

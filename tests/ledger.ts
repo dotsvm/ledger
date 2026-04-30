@@ -53,4 +53,32 @@ describe("ledger", () => {
       assert.match(String(err), /InsufficientFunds|0x1/);
     }
   });
+
+  it("deposit and transfer", async () => {
+    await program.methods
+      .deposit(new anchor.BN(100))
+      .accounts({
+        user: userA.publicKey,
+        signer: provider.wallet.publicKey
+      })
+      .rpc();
+
+    let accountA = await program.account.userAccount.fetch(userA.publicKey);
+    assert.equal(accountA.balance.toNumber(), 100);
+
+    await program.methods
+      .transfer(new anchor.BN(50))
+      .accounts({
+        sender: userA.publicKey,
+        receiver: userB.publicKey,
+        signer: provider.wallet.publicKey
+      })
+      .rpc();
+
+    accountA = await program.account.userAccount.fetch(userA.publicKey);
+    const accountB = await program.account.userAccount.fetch(userB.publicKey);
+
+    assert.equal(accountA.balance.toNumber(), 50);
+    assert.equal(accountB.balance.toNumber(), 50);
+  });
 });
