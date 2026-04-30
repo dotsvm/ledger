@@ -1,5 +1,6 @@
 use crate::state::user_account::UserAccount;
 use anchor_lang::prelude::*;
+use crate::errors::LedgerError;
 
 #[derive(Accounts)]
 pub struct Transfer<'info> {
@@ -17,16 +18,12 @@ pub fn transfer(ctx: Context<Transfer>, amount: u64) -> Result<()> {
     let receiver = &mut ctx.accounts.receiver;
     let signer = &ctx.accounts.signer;
 
-    if sender.owner != signer.key() {
-        return Err(ProgramError::IllegalOwner.into());
-    }
+    require!(sender.owner == signer.key(), LedgerError::Unauthorized);
 
-    if sender.balance < amount {
-        return Err(ProgramError::InsufficientFunds.into());
-    }
+    require!(sender.balance >= amount, LedgerError::InsufficientBalance);
 
-    sender.balance -= amount;
-    receiver.balance += amount;
+    sender.balance = sender.balance.checked_sub(amount).ok_or(LedgerError::Overflow)?;
+    receiver.balance = receiver.balance.checked_add(amount).ok_or(LedgerError::Overflow)?;
 
     Ok(())
 }

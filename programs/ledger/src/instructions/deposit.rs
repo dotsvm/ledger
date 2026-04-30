@@ -1,5 +1,6 @@
 use anchor_lang::prelude::*;
 use crate::state::user_account::UserAccount;
+use crate::errors::LedgerError;
 
 #[derive(Accounts)]
 pub struct Deposit<'info> {
@@ -13,9 +14,7 @@ pub fn deposit(ctx: Context<Deposit>, amount: u64) -> Result<()> {
     let user = &mut ctx.accounts.user;
     let signer = &ctx.accounts.signer;
 
-    if user.owner != signer.key() {
-        return Err(ProgramError::IllegalOwner.into());
-    }
+    require!(user.owner == signer.key(), LedgerError::Unauthorized);
 
     user.balance += amount;
 
