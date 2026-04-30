@@ -1,5 +1,5 @@
 
-# ledger program (anchor)
+## ledger program (anchor)
 
 a simple solana program built using anchor that implements a basic ledger system.
 
